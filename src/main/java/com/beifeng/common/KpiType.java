@@ -22,6 +22,7 @@ public enum KpiType {
     HOURLY_SESSIONS_LENGTH("hourly_sessions_length"),//按小时统计会话长度
     WEBSITE_PAGEVIEW("website_pageview"),//统计浏览器维度的pv kpi
     LOCATION("location"),//统计地域信息维度的Kpi
+    INBOUND("inbound"),//统计inbound维度下的跳出会话kpi
     ;
 
     public final String name;

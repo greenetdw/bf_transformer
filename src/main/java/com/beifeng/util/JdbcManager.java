@@ -1,13 +1,10 @@
 package com.beifeng.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-import org.apache.hadoop.conf.Configuration;
-
 import com.beifeng.common.GlobalConstants;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
+
+import java.sql.*;
 
 /**
  * jdbc管理
@@ -43,4 +40,36 @@ public class JdbcManager {
         }
         return DriverManager.getConnection(url, username, password);
     }
+
+    /**
+     * 关闭数据库连接
+     *
+     * @param conn
+     * @param tsmt
+     * @param rs
+     */
+    public static void close(Connection conn, Statement tsmt, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                //nothing
+            }
+        }
+        if (tsmt != null) {
+            try {
+                tsmt.close();
+            } catch (SQLException e) {
+                //nothing
+            }
+        }
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                //nothing
+            }
+        }
+    }
+
 }

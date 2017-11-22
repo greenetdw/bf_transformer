@@ -14,18 +14,62 @@ import java.io.IOException;
 public class StatsInboundDimension extends StatsDimension {
     private StatsCommonDimension statsCommon = new StatsCommonDimension();
     private InboundDimension inbound = new InboundDimension();
+
+
+    public StatsInboundDimension() {
+    }
+
+    public StatsInboundDimension(StatsCommonDimension statsCommon, InboundDimension inbound) {
+        this.statsCommon = statsCommon;
+        this.inbound = inbound;
+    }
+
+    /**
+     * 根据已有的实例对象克隆一个对象
+     *
+     * @param dimension
+     * @return
+     */
+    public static StatsInboundDimension clone(StatsInboundDimension dimension) {
+        return new StatsInboundDimension(StatsCommonDimension.clone(dimension.statsCommon), new InboundDimension(dimension.inbound));
+    }
+
     @Override
     public int compareTo(BaseDimension o) {
-        return 0;
+        StatsInboundDimension other = (StatsInboundDimension) o;
+        int tmp = this.statsCommon.compareTo(other.statsCommon);
+        if (tmp != 0) {
+            return tmp;
+        }
+        tmp = this.inbound.compareTo(other.inbound);
+        return tmp;
     }
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
-
+        this.statsCommon.write(dataOutput);
+        this.inbound.write(dataOutput);
     }
 
     @Override
     public void readFields(DataInput dataInput) throws IOException {
+        this.statsCommon.readFields(dataInput);
+        this.inbound.readFields(dataInput);
+    }
 
+    public StatsCommonDimension getStatsCommon() {
+        return statsCommon;
+    }
+
+    public void setStatsCommon(StatsCommonDimension statsCommon) {
+        this.statsCommon = statsCommon;
+    }
+
+    public InboundDimension getInbound() {
+        return inbound;
+    }
+
+    public void setInbound(InboundDimension inbound) {
+        this.inbound = inbound;
     }
 }

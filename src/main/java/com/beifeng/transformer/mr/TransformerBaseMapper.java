@@ -1,15 +1,12 @@
 package com.beifeng.transformer.mr;
 
 import com.beifeng.common.EventLogConstants;
-import com.beifeng.common.GlobalConstants;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.mapreduce.TableMapper;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.log4j.Logger;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -200,7 +197,7 @@ public class TransformerBaseMapper<KEYOUT, VALUEOUT> extends TableMapper<KEYOUT,
      * @param value
      * @return
      */
-    public String getReferreUrl(Result value) {
+    public String getReferrerUrl(Result value) {
         return this.fetchValue(value, EventLogConstants.LOG_COLUMN_NAME_REFERRER_URL);
     }
 
