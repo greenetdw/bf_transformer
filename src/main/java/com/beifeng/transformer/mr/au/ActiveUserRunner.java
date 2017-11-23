@@ -1,12 +1,15 @@
 package com.beifeng.transformer.mr.au;
 
 import com.beifeng.common.EventLogConstants;
+import com.beifeng.common.KpiType;
 import com.beifeng.transformer.model.dim.StatsUserDimension;
 import com.beifeng.transformer.model.value.map.TimeOutputValue;
 import com.beifeng.transformer.model.value.reduce.MapWritableValue;
 import com.beifeng.transformer.mr.TransformerBaseRunner;
 import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Partitioner;
 import org.apache.log4j.Logger;
 
 public class ActiveUserRunner extends TransformerBaseRunner {
@@ -23,8 +26,22 @@ public class ActiveUserRunner extends TransformerBaseRunner {
         }
     }
 
+    @Override
+    protected void configure(String... resourceFiles) {
+        super.configure(resourceFiles);
+        conf.set("mapred.child.java.opts", "-Xmx500m");
+        conf.set("mapreduce.map.output.compress", "true");
+    }
 
-
+    @Override
+    protected void beforeRunJob(Job job) {
+        super.beforeRunJob(job);
+        job.setNumReduceTasks(3);//每个统计维度一个reducer
+        job.setPartitionerClass(ActiveUserPartitioner.class);//设置分区类
+        //不启动推测执行
+        job.setMapSpeculativeExecution(false);
+        job.setReduceSpeculativeExecution(false);
+    }
 
     @Override
     protected Filter fetchHbaseFilter() {
@@ -42,5 +59,19 @@ public class ActiveUserRunner extends TransformerBaseRunner {
         return filterList;
     }
 
+    public static class ActiveUserPartitioner extends Partitioner<StatsUserDimension, TimeOutputValue> {
+
+        @Override
+        public int getPartition(StatsUserDimension key, TimeOutputValue value, int numPartitions) {
+            if (KpiType.ACTIVE_USER.name.equals(key.getStatsCommon().getKpi().getKpiName())) {
+                return 0;//处理active user
+            } else if (KpiType.BROWSER_ACTIVE_USER.name.equals(key.getStatsCommon().getKpi().getKpiName())) {
+                return 1;//处理browser active user
+            } else if (KpiType.HOURLY_ACTIVE_USER.name.equals(key.getStatsCommon().getKpi().getKpiName())) {
+                return 2;//处理hourly active user
+            }
+            throw new IllegalArgumentException("无法获取分区id，当前kpi:" + key.getStatsCommon().getKpi().getKpiName() + ",当前reducer个数" + numPartitions);
+        }
+    }
 
 }

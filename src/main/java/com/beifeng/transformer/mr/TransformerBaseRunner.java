@@ -226,7 +226,7 @@ public class TransformerBaseRunner implements Tool {
         this.configure();
     }
 
-    private void configure(String... resourceFiles) {
+    protected void configure(String... resourceFiles) {
         if (this.conf == null) {
             this.conf = HBaseConfiguration.create();
         }
