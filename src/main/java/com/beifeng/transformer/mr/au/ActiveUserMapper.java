@@ -14,9 +14,7 @@ import com.beifeng.transformer.mr.TransformerBaseMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
-import org.apache.hadoop.hbase.mapreduce.TableMapper;
 import org.apache.hadoop.hbase.util.Bytes;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -34,13 +32,15 @@ public class ActiveUserMapper extends TransformerBaseMapper<StatsUserDimension, 
 
     private KpiDimension hourlyActiveUserKpi = new KpiDimension(KpiType.HOURLY_ACTIVE_USER.name);
 
+    private String uuid, platform, serverTime, browserName, browserVersion;
+
     @Override
     protected void map(ImmutableBytesWritable key, Result value, Context context) throws IOException, InterruptedException {
         this.inputRecords++;
         //获取uuid,platform,serverTime,从hbase返回的结果集中
-        String uuid = this.getUuid(value);
-        String platform = this.getPlatform(value);
-        String serverTime = this.getServerTime(value);
+        this.uuid = this.getUuid(value);
+        this.platform = this.getPlatform(value);
+        this.serverTime = this.getServerTime(value);
 
         //过滤无效数据
         if (StringUtils.isBlank(uuid) || StringUtils.isBlank(platform) || StringUtils.isBlank(serverTime) || !StringUtils.isNumeric(serverTime.trim())) {
@@ -57,8 +57,8 @@ public class ActiveUserMapper extends TransformerBaseMapper<StatsUserDimension, 
         //进行platform创建
         List<PlatformDimension> platforms = PlatformDimension.buildList(platform);
 
-        String browserName = this.getBrowserName(value);
-        String browserVersion = this.getBrowserVersion(value);
+        this.browserName = this.getBrowserName(value);
+        this.browserVersion = this.getBrowserVersion(value);
         List<BrowserDimension> browserDimensions = BrowserDimension.buildList(browserName, browserVersion);
 
         StatsCommonDimension statsCommon = this.outputKey.getStatsCommon();
@@ -72,6 +72,7 @@ public class ActiveUserMapper extends TransformerBaseMapper<StatsUserDimension, 
             context.write(outputKey, outputValue);
             this.outputRecrods++;
 
+            //输出hourly active user的键值对
             statsCommon.setKpi(hourlyActiveUserKpi);
             context.write(this.outputKey, this.outputValue);
             this.outputRecrods++;
