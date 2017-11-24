@@ -4,7 +4,6 @@ import com.beifeng.common.EventLogConstants;
 import com.beifeng.common.GlobalConstants;
 import com.beifeng.util.TimeUtil;
 import com.google.common.collect.Lists;
-import javafx.scene.control.Tab;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -23,12 +22,8 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 
-import javax.lang.model.SourceVersion;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by zhouning on 2017/11/20.

@@ -6,8 +6,7 @@ import com.beifeng.transformer.model.dim.base.BaseDimension;
 import com.beifeng.transformer.model.value.BaseStatsValueWritable;
 import com.beifeng.transformer.model.value.reduce.MapWritableValue;
 import com.beifeng.transformer.mr.IOutputCollector;
-import com.beifeng.transformer.service.IDimensionConverter;
-import org.apache.commons.collections.map.PredicatedSortedMap;
+import com.beifeng.transformer.service.rpc.IDimensionConverter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 

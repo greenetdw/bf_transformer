@@ -1,20 +1,21 @@
-package com.beifeng.transformer.service;
+package com.beifeng.transformer.service.rpc;
+
+import com.beifeng.transformer.model.dim.base.BaseDimension;
+import org.apache.hadoop.ipc.VersionedProtocol;
 
 import java.io.IOException;
 
-import com.beifeng.transformer.model.dim.base.BaseDimension;
-
 /**
  * 提供专门操作dimension表的接口
- * 
- * @author gerry
  *
  */
-public interface IDimensionConverter {
+public interface IDimensionConverter extends VersionedProtocol{
+    public static final long versionID = 1;
+
     /**
      * 根据dimension的value值获取id<br/>
      * 如果数据库中有，那么直接返回。如果没有，那么进行插入后返回新的id值
-     * 
+     *
      * @param dimension
      * @return
      * @throws IOException

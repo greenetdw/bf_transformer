@@ -1,5 +1,18 @@
 package com.beifeng.transformer.mr;
 
+import com.beifeng.common.GlobalConstants;
+import com.beifeng.common.KpiType;
+import com.beifeng.transformer.model.dim.base.BaseDimension;
+import com.beifeng.transformer.model.value.BaseStatsValueWritable;
+import com.beifeng.transformer.service.rpc.IDimensionConverter;
+import com.beifeng.transformer.service.rpc.client.DimensionConverterClient;
+import com.beifeng.util.JdbcManager;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,29 +20,10 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapreduce.JobContext;
-import org.apache.hadoop.mapreduce.OutputCommitter;
-import org.apache.hadoop.mapreduce.OutputFormat;
-import org.apache.hadoop.mapreduce.RecordWriter;
-import org.apache.hadoop.mapreduce.TaskAttemptContext;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.log4j.Logger;
-
-import com.beifeng.common.GlobalConstants;
-import com.beifeng.common.KpiType;
-import com.beifeng.transformer.model.dim.base.BaseDimension;
-import com.beifeng.transformer.model.value.BaseStatsValueWritable;
-import com.beifeng.transformer.service.IDimensionConverter;
-import com.beifeng.transformer.service.impl.DimensionConverterImpl;
-import com.beifeng.util.JdbcManager;
-
 /**
  * 自定义输出到mysql的outputformat类
- * 
- * @author gerry
  *
+ * @author gerry
  */
 public class TransformerOutputFormat extends OutputFormat<BaseDimension, BaseStatsValueWritable> {
     private static final Logger logger = Logger.getLogger(TransformerOutputFormat.class);
@@ -38,7 +32,7 @@ public class TransformerOutputFormat extends OutputFormat<BaseDimension, BaseSta
     public RecordWriter<BaseDimension, BaseStatsValueWritable> getRecordWriter(TaskAttemptContext context) throws IOException, InterruptedException {
         Configuration conf = context.getConfiguration();
         Connection conn = null;
-        IDimensionConverter converter = new DimensionConverterImpl();
+        IDimensionConverter converter = DimensionConverterClient.createDimensionConverter(conf);
         try {
             conn = JdbcManager.getConnection(conf, GlobalConstants.WAREHOUSE_OF_REPORT);
             conn.setAutoCommit(false);
@@ -61,9 +55,8 @@ public class TransformerOutputFormat extends OutputFormat<BaseDimension, BaseSta
 
     /**
      * 自定义具体数据输出writer
-     * 
-     * @author gerry
      *
+     * @author gerry
      */
     public class TransformerRecordWriter extends RecordWriter<BaseDimension, BaseStatsValueWritable> {
         private Connection conn = null;
@@ -147,6 +140,7 @@ public class TransformerOutputFormat extends OutputFormat<BaseDimension, BaseSta
                             // nothing
                         }
                 }
+                DimensionConverterClient.stopDimensionConverterProxy(converter);
             }
         }
 

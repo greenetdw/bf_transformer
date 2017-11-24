@@ -1,20 +1,15 @@
-package com.beifeng.transformer.service.impl;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+package com.beifeng.transformer.service.rpc.server;
 
 import com.beifeng.transformer.model.dim.base.*;
+import com.beifeng.transformer.service.rpc.IDimensionConverter;
+import com.mysql.jdbc.Statement;
+import org.apache.hadoop.ipc.ProtocolSignature;
 import org.apache.log4j.Logger;
 
-import com.beifeng.transformer.service.IDimensionConverter;
-import com.mysql.jdbc.Statement;
+import java.io.IOException;
+import java.sql.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class DimensionConverterImpl implements IDimensionConverter {
     private static final Logger logger = Logger.getLogger(DimensionConverterImpl.class);
@@ -103,7 +98,7 @@ public class DimensionConverterImpl implements IDimensionConverter {
      * @param dimension
      * @return
      */
-    private String buildCacheKey(BaseDimension dimension) {
+    public static String buildCacheKey(BaseDimension dimension) {
         StringBuilder sb = new StringBuilder();
         if (dimension instanceof DateDimension) {
             sb.append("date_dimension");
@@ -263,5 +258,15 @@ public class DimensionConverterImpl implements IDimensionConverter {
             }
         }
         throw new RuntimeException("从数据库获取id失败");
+    }
+
+    @Override
+    public long getProtocolVersion(String protocol, long clientVersion) throws IOException {
+        return IDimensionConverter.versionID;
+    }
+
+    @Override
+    public ProtocolSignature getProtocolSignature(String protocol, long clientVersion, int clientMethodsHash) throws IOException {
+        return null;
     }
 }

@@ -6,7 +6,7 @@ import com.beifeng.transformer.model.dim.base.BaseDimension;
 import com.beifeng.transformer.model.value.BaseStatsValueWritable;
 import com.beifeng.transformer.model.value.reduce.LocationReducerOutputValue;
 import com.beifeng.transformer.mr.IOutputCollector;
-import com.beifeng.transformer.service.IDimensionConverter;
+import com.beifeng.transformer.service.rpc.IDimensionConverter;
 import org.apache.hadoop.conf.Configuration;
 
 import java.io.IOException;
